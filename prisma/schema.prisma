@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  qrCodes       QRCode[]
+  links         Link[]
+}
+
+model QRCode {
+  id                 String      @id @default(cuid())
+  userId             String
+  name               String
+  destinationUrl     String
+  shortCode          String      @unique
+  customizedSettings String?     // JSON string for colors, logo, etc.
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  isActive           Boolean     @default(true)
+  clicks             Int         @default(0)
+
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analytics          Analytics[]
+}
+
+model Link {
+  id            String      @id @default(cuid())
+  userId        String
+  originalUrl   String
+  shortCode     String      @unique
+  customSlug    String?     @unique
+  passwordHash  String?
+  expiresAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  isActive      Boolean     @default(true)
+  clicks        Int         @default(0)
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analytics     Analytics[]
+}
+
+model Analytics {
+  id            String   @id @default(cuid())
+  qrCodeId      String?
+  linkId        String?
+  ipAddress     String?
+  country       String?
+  city          String?
+  deviceType    String?
+  browser       String?
+  os            String?
+  referrer      String?
+  createdAt     DateTime @default(now())
+
+  qrCode        QRCode?  @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  link          Link?    @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
