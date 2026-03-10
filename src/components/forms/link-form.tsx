@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export function LinkForm() {
     const [error, setError] = useState<string | undefined>("");
@@ -96,7 +97,14 @@ export function LinkForm() {
 
                     {error && <div className="text-sm text-destructive">{error}</div>}
                     <Button type="submit" className="w-full" disabled={isPending}>
-                        {isPending ? "Creating..." : "Create Link"}
+                        {isPending ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Creating...
+                            </>
+                        ) : (
+                            "Create Link"
+                        )}
                     </Button>
                 </form>
             </CardContent>

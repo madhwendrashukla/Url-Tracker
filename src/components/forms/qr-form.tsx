@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { Loader2 } from "lucide-react";
 
 export function QrForm() {
     const [error, setError] = useState<string | undefined>("");
@@ -91,7 +92,14 @@ export function QrForm() {
 
                         {error && <div className="text-sm text-destructive">{error}</div>}
                         <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? "Generating..." : "Generate QR Code"}
+                            {isPending ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                "Generate QR Code"
+                            )}
                         </Button>
                     </form>
                 </CardContent>
