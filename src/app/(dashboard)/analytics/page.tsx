@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AnalyticsChart } from "@/components/charts/analytics-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AnalyticsFilter } from "@/components/analytics-filter";
 
 export default async function AnalyticsPage(props: { searchParams: Promise<{ filter?: string }> }) {
     const searchParams = await props.searchParams;
@@ -72,26 +73,7 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
                     <p className="text-muted-foreground">Deep dive into your traffic metrics.</p>
                 </div>
 
-                {/* Simulated Dropdown with Links for simplicity vs client components */}
-                <div className="flex bg-muted p-1 rounded-md overflow-x-auto max-w-full no-scrollbar">
-                    <Link href="/analytics?filter=all">
-                        <Button variant={!filter || filter === "all" ? "default" : "ghost"} size="sm">All</Button>
-                    </Link>
-                    {qrCodes.map(qr => (
-                        <Link key={qr.id} href={`/analytics?filter=qr_${qr.id}`}>
-                            <Button variant={filter === `qr_${qr.id}` ? "default" : "ghost"} size="sm" className="whitespace-nowrap">
-                                QR: {qr.name}
-                            </Button>
-                        </Link>
-                    ))}
-                    {links.map(link => (
-                        <Link key={link.id} href={`/analytics?filter=link_${link.id}`}>
-                            <Button variant={filter === `link_${link.id}` ? "default" : "ghost"} size="sm" className="whitespace-nowrap">
-                                Link: /{link.customSlug}
-                            </Button>
-                        </Link>
-                    ))}
-                </div>
+                <AnalyticsFilter currentFilter={filter || "all"} qrCodes={qrCodes} links={links} />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

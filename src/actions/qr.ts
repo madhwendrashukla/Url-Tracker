@@ -39,8 +39,7 @@ export async function createQrCode(formData: FormData) {
             }
         });
 
-        revalidatePath("/qr-codes");
-        revalidatePath("/dashboard");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
         return { error: "Failed to create QR code" };
@@ -58,8 +57,7 @@ export async function deleteQrCode(id: string) {
         }
 
         await prisma.qRCode.delete({ where: { id } });
-        revalidatePath("/qr-codes");
-        revalidatePath("/dashboard");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
         return { error: "Failed to delete" };

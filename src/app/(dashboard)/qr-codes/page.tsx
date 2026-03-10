@@ -8,6 +8,7 @@ import { Plus, Download, Trash2, ExternalLink } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { deleteQrCode } from "@/actions/qr";
 import { QrDownloadBtn } from "@/components/qr-download-btn";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function QrCodesPage() {
     const session = await auth();
@@ -85,9 +86,7 @@ export default async function QrCodesPage() {
                                             <div className="flex justify-end gap-2">
                                                 <QrDownloadBtn id={qr.id} shortCode={qr.shortCode} />
                                                 <form action={deleteQrCode.bind(null, qr.id) as any}>
-                                                    <Button variant="destructive" size="icon" title="Delete">
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                    <DeleteButton />
                                                 </form>
                                             </div>
                                         </TableCell>

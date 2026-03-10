@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import { Plus, Trash2, ExternalLink, Copy } from "lucide-react";
 import { deleteLink } from "@/actions/link";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function LinksPage() {
     const session = await auth();
@@ -72,9 +73,7 @@ export default async function LinksPage() {
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <form action={deleteLink.bind(null, link.id) as any}>
-                                                    <Button variant="destructive" size="icon" title="Delete">
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                    <DeleteButton />
                                                 </form>
                                             </div>
                                         </TableCell>

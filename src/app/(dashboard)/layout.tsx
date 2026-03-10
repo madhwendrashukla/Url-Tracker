@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { UserNav } from "@/components/user-nav";
+import { MobileNav } from "@/components/mobile-nav";
 
 export default async function DashboardLayout({
     children,
@@ -18,8 +19,11 @@ export default async function DashboardLayout({
         <div className="flex min-h-screen flex-col">
             <header className="sticky top-0 z-40 border-b bg-background">
                 <div className="container flex h-16 items-center justify-between py-4 px-6 max-w-[1400px] mx-auto">
-                    <div className="flex gap-2 items-center font-bold text-xl tracking-tight">
-                        QR & Link Manager
+                    <div className="flex items-center gap-2">
+                        <MobileNav />
+                        <div className="flex gap-2 items-center font-bold text-xl tracking-tight">
+                            QR & Link Manager
+                        </div>
                     </div>
                     <UserNav user={session.user} />
                 </div>

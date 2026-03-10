@@ -44,8 +44,7 @@ export async function createLink(formData: FormData) {
             }
         });
 
-        revalidatePath("/links");
-        revalidatePath("/dashboard");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
         return { error: "Failed to create link" };
@@ -63,8 +62,7 @@ export async function deleteLink(id: string) {
         }
 
         await prisma.link.delete({ where: { id } });
-        revalidatePath("/links");
-        revalidatePath("/dashboard");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
         return { error: "Failed to delete" };
