@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Plus, Trash2, ExternalLink, Copy } from "lucide-react";
 import { deleteLink } from "@/actions/link";
 import { DeleteButton } from "@/components/delete-button";
+import { CopyButton } from "@/components/copy-button";
 
 export default async function LinksPage() {
     const session = await auth();
@@ -58,6 +59,7 @@ export default async function LinksPage() {
                             )}
                             {links.map((link) => {
                                 const shortUrl = `/url/${link.customSlug}`;
+                                const absoluteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${shortUrl}`;
                                 return (
                                     <TableRow key={link.id}>
                                         <TableCell className="font-semibold">{link.name}</TableCell>
@@ -74,6 +76,7 @@ export default async function LinksPage() {
                                         <TableCell>{new Date(link.createdAt).toLocaleDateString()}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
+                                                <CopyButton text={absoluteUrl} />
                                                 <form action={deleteLink.bind(null, link.id) as any}>
                                                     <DeleteButton />
                                                 </form>
