@@ -6,6 +6,7 @@ import { AnalyticsChart } from "@/components/charts/analytics-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AnalyticsFilter } from "@/components/analytics-filter";
+import { LocalTime } from "@/components/local-time";
 
 export default async function AnalyticsPage(props: { searchParams: Promise<{ filter?: string }> }) {
     const searchParams = await props.searchParams;
@@ -37,6 +38,10 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
 
     const analytics = await prisma.analytics.findMany({
         where: whereClause,
+        include: {
+            link: true,
+            qrCode: true
+        },
         orderBy: { createdAt: "desc" }
     });
 
@@ -155,9 +160,9 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
                         <TableBody>
                             {analytics.slice(0, 10).map((a) => (
                                 <TableRow key={a.id}>
-                                    <TableCell>{new Date(a.createdAt).toLocaleString()}</TableCell>
-                                    <TableCell className="font-mono text-xs text-muted-foreground">
-                                        {a.qrCodeId ? `QR: ${a.qrCodeId.slice(0, 6)}` : `Link: ${a.linkId?.slice(0, 6)}`}
+                                    <TableCell><LocalTime date={a.createdAt} /></TableCell>
+                                    <TableCell className="font-semibold text-sm">
+                                        {a.qrCodeId ? `QR: ${a.qrCode?.name}` : `Link: ${a.link?.name}`}
                                     </TableCell>
                                     <TableCell>{a.country ? `${a.country} ${a.city ? `(${a.city})` : ''}` : 'Unknown'}</TableCell>
                                     <TableCell>{a.browser} / {a.os}</TableCell>

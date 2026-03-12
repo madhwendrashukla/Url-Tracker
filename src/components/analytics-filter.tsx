@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 interface AnalyticsFilterProps {
     currentFilter: string;
     qrCodes: { id: string; name: string }[];
-    links: { id: string; customSlug: string | null; originalUrl: string }[];
+    links: { id: string; name: string; customSlug: string | null; originalUrl: string }[];
 }
 
 export function AnalyticsFilter({ currentFilter, qrCodes, links }: AnalyticsFilterProps) {
@@ -38,7 +38,7 @@ export function AnalyticsFilter({ currentFilter, qrCodes, links }: AnalyticsFilt
                         <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Short Links</div>
                         {links.map((link) => (
                             <SelectItem key={link.id} value={`link_${link.id}`}>
-                                /{link.customSlug}
+                                Link: {link.name}
                             </SelectItem>
                         ))}
                     </SelectGroup>
