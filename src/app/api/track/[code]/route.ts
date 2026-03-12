@@ -33,9 +33,34 @@ export async function GET(
     const os = result.os.name || "Unknown";
     const deviceType = result.device.type || "Desktop";
 
-    const ipAccess = req.headers.get("x-forwarded-for") || "unknown";
-    const country = req.headers.get("x-vercel-ip-country") || null;
-    const city = req.headers.get("x-vercel-ip-city") || null;
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ipAccess = forwardedFor ? forwardedFor.split(',')[0].trim() : req.headers.get("x-real-ip") || "unknown";
+
+    let country = req.headers.get("x-vercel-ip-country") || null;
+    let city = req.headers.get("x-vercel-ip-city") || null;
+
+    // Use external IP Geolocation API if IP is valid to maximize accuracy
+    if (ipAccess !== "unknown" && ipAccess !== "127.0.0.1" && ipAccess !== "::1") {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout
+
+            const geoRes = await fetch(`http://ip-api.com/json/${ipAccess}?fields=status,country,city`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (geoRes.ok) {
+                const geoData = await geoRes.json();
+                if (geoData.status === "success") {
+                    country = geoData.country || country;
+                    city = geoData.city || city;
+                }
+            }
+        } catch (e) {
+            console.warn("External IP geolocation failed, falling back to Vercel headers", e);
+        }
+    }
 
     try {
         await prisma.analytics.create({
