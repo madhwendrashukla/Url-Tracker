@@ -40,6 +40,7 @@ export default async function LinksPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Name</TableHead>
                                 <TableHead>Short Link</TableHead>
                                 <TableHead>Original URL</TableHead>
                                 <TableHead>Clicks</TableHead>
@@ -50,15 +51,16 @@ export default async function LinksPage() {
                         <TableBody>
                             {links.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                         No links found.
                                     </TableCell>
                                 </TableRow>
                             )}
                             {links.map((link) => {
-                                const shortUrl = `/api/track/${link.customSlug}`;
+                                const shortUrl = `/url/${link.customSlug}`;
                                 return (
                                     <TableRow key={link.id}>
+                                        <TableCell className="font-semibold">{link.name}</TableCell>
                                         <TableCell className="font-medium">
                                             <a href={shortUrl} target="_blank" rel="noreferrer" className="flex items-center text-primary hover:underline group">
                                                 /{link.customSlug}

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const linkSchema = z.object({
+    name: z.string().min(1, "Name is required"),
     originalUrl: z.string().url("Must be a valid URL"),
     customSlug: z.string().optional(),
 });
@@ -21,7 +22,7 @@ export async function createLink(formData: FormData) {
         return { error: "Invalid fields", details: validated.error.flatten().fieldErrors };
     }
 
-    const { originalUrl, customSlug } = validated.data;
+    const { name, originalUrl, customSlug } = validated.data;
 
     const shortCode = crypto.randomUUID().split("-")[0];
     const finalSlug = customSlug || shortCode;
@@ -38,6 +39,7 @@ export async function createLink(formData: FormData) {
         await prisma.link.create({
             data: {
                 userId: session.user.id,
+                name,
                 originalUrl,
                 shortCode,
                 customSlug: finalSlug,

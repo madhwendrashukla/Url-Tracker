@@ -43,6 +43,7 @@ model QRCode {
 model Link {
   id            String      @id @default(cuid())
   userId        String
+  name          String      @default("Untitled Link")
   originalUrl   String
   shortCode     String      @unique
   customSlug    String?     @unique

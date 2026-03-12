@@ -69,7 +69,7 @@ export default async function QrCodesPage() {
                                     <TableRow key={qr.id}>
                                         <TableCell>
                                             <div className="w-10 h-10 bg-white rounded flex items-center justify-center p-1 border">
-                                                <QRCodeSVG id={"qr-" + qr.id} value={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/track/${qr.shortCode}`} size={32} fgColor={settings.fgColor} bgColor={settings.bgColor} />
+                                                <QRCodeSVG id={"qr-" + qr.id} value={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/qr/${qr.shortCode}`} size={32} fgColor={settings.fgColor} bgColor={settings.bgColor} />
                                             </div>
                                         </TableCell>
                                         <TableCell className="font-medium">{qr.name}</TableCell>

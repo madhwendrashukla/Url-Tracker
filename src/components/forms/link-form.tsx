@@ -38,6 +38,16 @@ export function LinkForm() {
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
+                        <Label htmlFor="name">Name / Label</Label>
+                        <Input
+                            id="name"
+                            name="name"
+                            placeholder="My Awesome Link"
+                            required
+                            disabled={isPending}
+                        />
+                    </div>
+                    <div className="space-y-2">
                         <Label htmlFor="originalUrl">Original URL</Label>
                         <Input
                             id="originalUrl"
