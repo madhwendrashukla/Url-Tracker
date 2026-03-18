@@ -68,10 +68,9 @@ export async function GET(
             where: { id: qr.id },
             data: { clicks: { increment: 1 } }
         });
-
-        return NextResponse.redirect(qr.destinationUrl);
     } catch (error) {
         console.error("Tracking Error:", error);
-        return NextResponse.redirect(qr.destinationUrl);
     }
+
+    return NextResponse.json({ ok: true });
 }
