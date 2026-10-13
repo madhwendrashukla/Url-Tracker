@@ -6,18 +6,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import { Plus, ExternalLink, QrCode } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import { Pagination, PAGE_SIZE, getPage } from "@/components/pagination";
 import { QRCodeSVG } from "qrcode.react";
 import { deleteQrCode } from "@/actions/qr";
 import { QrDownloadBtn } from "@/components/qr-download-btn";
 import { DeleteButton } from "@/components/delete-button";
 
-export default async function QrCodesPage() {
+export default async function QrCodesPage(props: { searchParams: Promise<{ page?: string }> }) {
     const session = await auth();
     if (!session?.user) return null;
 
+    const where = { userId: session.user.id };
+    const total = await prisma.qRCode.count({ where });
+    const { page, totalPages, skip } = getPage((await props.searchParams).page, total);
+
     const qrCodes = await prisma.qRCode.findMany({
-        where: { userId: session.user.id },
-        orderBy: { createdAt: "desc" }
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: PAGE_SIZE,
     });
 
     return (
@@ -33,7 +40,7 @@ export default async function QrCodesPage() {
             <Card className="gap-0 py-0">
                 <CardHeader className="border-b py-4">
                     <CardTitle className="font-semibold">Your QR Codes</CardTitle>
-                    <CardDescription>A list of all QR codes you have created.</CardDescription>
+                    <CardDescription>A list of all QR codes you have created, newest first.</CardDescription>
                 </CardHeader>
                 <CardContent className="px-0">
                     <Table>
@@ -44,8 +51,8 @@ export default async function QrCodesPage() {
                                 <TableHead>Destination</TableHead>
                                 <TableHead>Short Code</TableHead>
                                 <TableHead>Scans</TableHead>
-                                <TableHead>Created</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Actions</TableHead>
+                                <TableHead className="text-right">Created</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -74,9 +81,9 @@ export default async function QrCodesPage() {
                                                 <QRCodeSVG id={"qr-" + qr.id} value={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/qr/${qr.shortCode}`} size={32} fgColor={settings.fgColor} bgColor={settings.bgColor} />
                                             </div>
                                         </TableCell>
-                                        <TableCell className="font-medium">{qr.name}</TableCell>
+                                        <TableCell className="max-w-[220px] truncate font-medium" title={qr.name}>{qr.name}</TableCell>
                                         <TableCell className="max-w-[220px] truncate">
-                                            <a href={qr.destinationUrl} target="_blank" rel="noreferrer" className="flex items-center text-muted-foreground hover:text-primary hover:underline">
+                                            <a href={qr.destinationUrl} target="_blank" rel="noreferrer" title={qr.destinationUrl} className="flex items-center text-muted-foreground hover:text-primary hover:underline">
                                                 <span className="truncate">{qr.destinationUrl}</span>
                                                 <ExternalLink className="ml-1 h-3 w-3 shrink-0" />
                                             </a>
@@ -87,20 +94,21 @@ export default async function QrCodesPage() {
                                         <TableCell>
                                             <span className="inline-flex min-w-8 justify-center rounded-full bg-muted px-2 py-0.5 text-xs font-semibold tabular-nums">{qr.clicks}</span>
                                         </TableCell>
-                                        <TableCell className="text-muted-foreground">{new Date(qr.createdAt).toLocaleDateString()}</TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
+                                        <TableCell>
+                                            <div className="flex gap-2">
                                                 <QrDownloadBtn id={qr.id} shortCode={qr.shortCode} />
                                                 <form action={deleteQrCode.bind(null, qr.id) as any}>
                                                     <DeleteButton />
                                                 </form>
                                             </div>
                                         </TableCell>
+                                        <TableCell className="text-right text-muted-foreground">{new Date(qr.createdAt).toLocaleDateString()}</TableCell>
                                     </TableRow>
                                 )
                             })}
                         </TableBody>
                     </Table>
+                    <Pagination basePath="/qr-codes" page={page} totalPages={totalPages} total={total} />
                 </CardContent>
             </Card>
         </div>
