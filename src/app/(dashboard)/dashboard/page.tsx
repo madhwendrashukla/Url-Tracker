@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { QrCode, Link as LinkIcon, MousePointerClick, Activity } from "lucide-react";
+import { QrCode, Link as LinkIcon, MousePointerClick, Activity, Plus, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -31,69 +35,34 @@ export default async function DashboardOverview() {
     const totalClicks = (qrStats._sum.clicks ?? 0) + (linkStats._sum.clicks ?? 0);
 
     return (
-        <div className="flex flex-col space-y-6">
-            <div>
-                <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                <p className="text-muted-foreground">Overview of your QR codes and links performance.</p>
+        <div className="flex flex-col gap-8">
+            <PageHeader title="Dashboard" description="Overview of your QR codes and links performance.">
+                <Link href="/links/create">
+                    <Button variant="outline">
+                        <LinkIcon className="mr-1 h-4 w-4" /> New link
+                    </Button>
+                </Link>
+                <Link href="/qr-codes/create">
+                    <Button>
+                        <Plus className="mr-1 h-4 w-4" /> New QR code
+                    </Button>
+                </Link>
+            </PageHeader>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total QR Codes" value={qrCount} hint={`${activeQrs} active QR codes`} icon={QrCode} tone="indigo" />
+                <StatCard title="Total Links" value={linkCount} hint={`${activeLinks} active links`} icon={LinkIcon} tone="violet" />
+                <StatCard title="Total Scans/Clicks" value={totalClicks} hint="Total engagements" icon={MousePointerClick} tone="sky" />
+                <StatCard title="Active Items" value={activeQrs + activeLinks} hint="Currently routing traffic" icon={Activity} tone="emerald" />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Total QR Codes</CardTitle>
-                        <QrCode className="w-4 h-4 text-muted-foreground" />
+            <div className="grid gap-4 lg:grid-cols-7">
+                <Card className="gap-0 py-0 lg:col-span-4">
+                    <CardHeader className="border-b py-4">
+                        <CardTitle className="font-semibold">Recent Activity</CardTitle>
+                        <CardDescription>The latest scans and clicks across your account.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{qrCount}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {activeQrs} active QR codes
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Total Links</CardTitle>
-                        <LinkIcon className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{linkCount}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {activeLinks} active links
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Total Scans/Clicks</CardTitle>
-                        <MousePointerClick className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalClicks}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Total engagements
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Active Items</CardTitle>
-                        <Activity className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{activeQrs + activeLinks}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Currently routing traffic
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
-                    <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-2">
+                    <CardContent className="px-0">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -105,28 +74,30 @@ export default async function DashboardOverview() {
                             <TableBody>
                                 {recentActivities.map(a => (
                                     <TableRow key={a.id}>
-                                        <TableCell className="text-sm">{new Date(a.createdAt).toLocaleDateString()}</TableCell>
-                                        <TableCell className="text-sm">{a.browser} on {a.os}</TableCell>
-                                        <TableCell className="text-sm">{a.ipAddress}</TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{new Date(a.createdAt).toLocaleDateString()}</TableCell>
+                                        <TableCell className="text-sm font-medium">{a.browser} on {a.os}</TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{a.ipAddress}</TableCell>
                                     </TableRow>
                                 ))}
                                 {recentActivities.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={3} className="text-center h-24 text-muted-foreground">No recent activity.</TableCell>
+                                        <TableCell colSpan={3} className="h-28 text-center text-muted-foreground">No recent activity.</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
                         </Table>
                     </CardContent>
                 </Card>
-                <Card className="col-span-3">
-                    <CardHeader>
-                        <CardTitle>Top Performing</CardTitle>
+                <Card className="gap-0 py-0 lg:col-span-3">
+                    <CardHeader className="border-b py-4">
+                        <CardTitle className="font-semibold">Top Performing</CardTitle>
+                        <CardDescription>Your most-clicked links and QR codes.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
-                            No data available yet.
-                        </div>
+                    <CardContent className="flex h-[220px] flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
+                        <span className="grid size-10 place-items-center rounded-full bg-muted">
+                            <TrendingUp className="size-5" />
+                        </span>
+                        No data available yet.
                     </CardContent>
                 </Card>
             </div>

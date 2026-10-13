@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/forms/login-form";
 
 export const metadata = {
-    title: "Login | QR & Link Manager",
+    title: "Log in",
 };
 
 export default function LoginPage() {

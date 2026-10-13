@@ -35,12 +35,12 @@ export function QrForm() {
 
     return (
         <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Create QR Code</CardTitle>
+            <Card className="gap-0 py-0">
+                <CardHeader className="border-b py-4">
+                    <CardTitle className="font-semibold">Create QR Code</CardTitle>
                     <CardDescription>Configure your new QR code destination and appearance.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="py-5">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Name / Label</Label>
@@ -90,8 +90,8 @@ export function QrForm() {
                             </div>
                         </div>
 
-                        {error && <div className="text-sm text-destructive">{error}</div>}
-                        <Button type="submit" className="w-full" disabled={isPending}>
+                        {error && <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</div>}
+                        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
                             {isPending ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -105,12 +105,12 @@ export function QrForm() {
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Live Preview</CardTitle>
+            <Card className="gap-0 py-0">
+                <CardHeader className="border-b py-4">
+                    <CardTitle className="font-semibold">Live Preview</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center py-10">
-                    <div className="p-4 bg-white border rounded-xl shadow-sm">
+                <CardContent className="flex flex-1 flex-col items-center justify-center bg-[radial-gradient(circle_at_center,var(--color-accent),transparent_70%)] py-12">
+                    <div className="rounded-2xl border bg-white p-5 shadow-lg shadow-indigo-900/5">
                         <QRCodeSVG
                             value={url || "https://example.com"}
                             size={200}

@@ -1,12 +1,10 @@
 import { LinkForm } from "@/components/forms/link-form";
+import { PageHeader } from "@/components/page-header";
 
 export default function CreateLinkPage() {
     return (
-        <div className="flex flex-col space-y-6">
-            <div>
-                <h2 className="text-2xl font-bold tracking-tight">New Short Link</h2>
-                <p className="text-muted-foreground">Shorten a URL and customize its appearance.</p>
-            </div>
+        <div className="flex flex-col gap-6">
+            <PageHeader title="New Short Link" description="Shorten a URL and customize its appearance." />
             <LinkForm />
         </div>
     );

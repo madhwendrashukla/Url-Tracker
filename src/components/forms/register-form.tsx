@@ -29,12 +29,12 @@ export function RegisterForm() {
     };
 
     return (
-        <Card className="w-[400px]">
-            <CardHeader>
-                <CardTitle>Create an account</CardTitle>
+        <Card className="w-full gap-6 bg-transparent py-0 ring-0">
+            <CardHeader className="px-0">
+                <CardTitle className="text-2xl font-semibold tracking-tight">Create an account</CardTitle>
                 <CardDescription>Enter your details to get started</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-0">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Name</Label>
@@ -48,16 +48,16 @@ export function RegisterForm() {
                         <Label htmlFor="password">Password</Label>
                         <Input id="password" name="password" type="password" required disabled={isPending} />
                     </div>
-                    {error && <div className="text-sm text-destructive">{error}</div>}
-                    <Button type="submit" className="w-full" disabled={isPending}>
+                    {error && <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</div>}
+                    <Button type="submit" size="lg" className="w-full" disabled={isPending}>
                         {isPending ? "Registering..." : "Register"}
                     </Button>
                 </form>
             </CardContent>
-            <CardFooter className="flex justify-center">
+            <CardFooter className="justify-start border-0 bg-transparent px-0 pt-0">
                 <p className="text-sm text-muted-foreground">
                     Already have an account?{" "}
-                    <Link href="/login" className="text-primary hover:underline">
+                    <Link href="/login" className="font-medium text-primary hover:underline">
                         Login here
                     </Link>
                 </p>

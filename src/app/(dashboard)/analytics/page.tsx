@@ -4,10 +4,11 @@ import { Prisma } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AnalyticsChart } from "@/components/charts/analytics-chart";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { AnalyticsFilter } from "@/components/analytics-filter";
 import { LocalTime } from "@/components/local-time";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
+import { Globe, MapPin, MousePointerClick, Users } from "lucide-react";
 
 const CHART_TIME_ZONE = "Asia/Kolkata";
 
@@ -75,82 +76,76 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
     ] as const);
     const uniqueVisitors = uniques[0]?.n ?? 0;
 
+    const maxLocation = Math.max(1, ...topLocations.map(([, count]) => count));
+    const maxBrowser = Math.max(1, ...topBrowsers.map(([, count]) => count));
+
     return (
-        <div className="flex flex-col space-y-6">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Analytics Explorer</h2>
-                    <p className="text-muted-foreground">Deep dive into your traffic metrics.</p>
-                </div>
-
+        <div className="flex flex-col gap-6">
+            <PageHeader title="Analytics Explorer" description="Deep dive into your traffic metrics.">
                 <AnalyticsFilter currentFilter={filter || "all"} qrCodes={qrCodes} links={links} />
-            </div>
+            </PageHeader>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalClicks}</div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Unique Visitors</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{uniqueVisitors}</div>
-                    </CardContent>
-                </Card>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total Clicks" value={totalClicks} icon={MousePointerClick} tone="indigo" />
+                <StatCard title="Unique Visitors" value={uniqueVisitors} icon={Users} tone="violet" />
             </div>
 
             <AnalyticsChart data={chartData} />
 
             <div className="grid gap-4 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Top Locations</CardTitle>
+                <Card className="gap-0 py-0">
+                    <CardHeader className="border-b py-4">
+                        <CardTitle className="flex items-center gap-2 font-semibold">
+                            <MapPin className="size-4 text-primary" /> Top Locations
+                        </CardTitle>
                         <CardDescription>Countries and cities where your audience is based.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {topLocations.length === 0 ? <p className="text-sm text-muted-foreground">No data.</p> : null}
-                            {topLocations.map(([loc, count]) => (
-                                <div key={loc} className="flex items-center justify-between">
-                                    <div className="font-medium text-sm">{loc}</div>
-                                    <div className="text-sm text-muted-foreground">{count} clicks</div>
+                    <CardContent className="space-y-4 py-5">
+                        {topLocations.length === 0 ? <p className="text-sm text-muted-foreground">No data.</p> : null}
+                        {topLocations.map(([loc, count]) => (
+                            <div key={loc} className="space-y-1.5">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="font-medium">{loc}</span>
+                                    <span className="text-muted-foreground tabular-nums">{count} clicks</span>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="h-1.5 rounded-full bg-muted">
+                                    <div className="h-1.5 rounded-full bg-primary" style={{ width: `${(count / maxLocation) * 100}%` }} />
+                                </div>
+                            </div>
+                        ))}
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Top Browsers</CardTitle>
+                <Card className="gap-0 py-0">
+                    <CardHeader className="border-b py-4">
+                        <CardTitle className="flex items-center gap-2 font-semibold">
+                            <Globe className="size-4 text-primary" /> Top Browsers
+                        </CardTitle>
                         <CardDescription>Most popular browsers used to access your links.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {topBrowsers.length === 0 ? <p className="text-sm text-muted-foreground">No data.</p> : null}
-                            {topBrowsers.map(([browser, count]) => (
-                                <div key={browser} className="flex items-center justify-between">
-                                    <div className="font-medium text-sm">{browser}</div>
-                                    <div className="text-sm text-muted-foreground">{count} clicks</div>
+                    <CardContent className="space-y-4 py-5">
+                        {topBrowsers.length === 0 ? <p className="text-sm text-muted-foreground">No data.</p> : null}
+                        {topBrowsers.map(([browser, count]) => (
+                            <div key={browser} className="space-y-1.5">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="font-medium">{browser}</span>
+                                    <span className="text-muted-foreground tabular-nums">{count} clicks</span>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="h-1.5 rounded-full bg-muted">
+                                    <div className="h-1.5 rounded-full bg-violet-500" style={{ width: `${(count / maxBrowser) * 100}%` }} />
+                                </div>
+                            </div>
+                        ))}
                     </CardContent>
                 </Card>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent Scans & Clicks</CardTitle>
+            <Card className="gap-0 py-0">
+                <CardHeader className="border-b py-4">
+                    <CardTitle className="font-semibold">Recent Scans & Clicks</CardTitle>
                     <CardDescription>The most recent activity trailing your codes and links.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -165,19 +160,23 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
                         <TableBody>
                             {recent.map((a) => (
                                 <TableRow key={a.id}>
-                                    <TableCell><LocalTime date={a.createdAt} /></TableCell>
-                                    <TableCell className="font-semibold text-sm">
-                                        {a.qrCodeId ? `QR: ${a.qrCode?.name}` : `Link: ${a.link?.name}`}
+                                    <TableCell className="text-muted-foreground"><LocalTime date={a.createdAt} /></TableCell>
+                                    <TableCell>
+                                        <span className={a.qrCodeId
+                                            ? "rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700"
+                                            : "rounded-md bg-violet-50 px-2 py-1 text-xs font-medium text-violet-700"}>
+                                            {a.qrCodeId ? `QR: ${a.qrCode?.name}` : `Link: ${a.link?.name}`}
+                                        </span>
                                     </TableCell>
                                     <TableCell>{a.country ? `${a.country} ${a.city ? `(${a.city})` : ''}` : 'Unknown'}</TableCell>
                                     <TableCell>{a.browser} / {a.os}</TableCell>
                                     <TableCell className="capitalize">{a.deviceType}</TableCell>
-                                    <TableCell className="text-xs text-muted-foreground">{a.ipAddress}</TableCell>
+                                    <TableCell className="font-mono text-xs text-muted-foreground">{a.ipAddress}</TableCell>
                                 </TableRow>
                             ))}
                             {recent.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                                    <TableCell colSpan={6} className="h-28 text-center text-muted-foreground">
                                         No activity to display.
                                     </TableCell>
                                 </TableRow>
@@ -189,4 +188,3 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
         </div>
     );
 }
-

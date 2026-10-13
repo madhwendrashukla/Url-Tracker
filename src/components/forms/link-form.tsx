@@ -30,12 +30,12 @@ export function LinkForm() {
     };
 
     return (
-        <Card className="max-w-2xl">
-            <CardHeader>
-                <CardTitle>Create Short Link</CardTitle>
+        <Card className="max-w-2xl gap-0 py-0">
+            <CardHeader className="border-b py-4">
+                <CardTitle className="font-semibold">Create Short Link</CardTitle>
                 <CardDescription>Shorten a long URL and track its clicks.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="py-5">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Name / Label</Label>
@@ -61,7 +61,7 @@ export function LinkForm() {
                     <div className="space-y-2">
                         <Label htmlFor="customSlug">Custom Slug (Optional)</Label>
                         <div className="flex items-center">
-                            <span className="flex items-center h-10 px-3 border border-r-0 rounded-l-md bg-muted text-muted-foreground text-sm">
+                            <span className="flex h-9 items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
                                 domain.com/
                             </span>
                             <Input
@@ -105,8 +105,8 @@ export function LinkForm() {
                         </TabsContent>
                     </Tabs>
 
-                    {error && <div className="text-sm text-destructive">{error}</div>}
-                    <Button type="submit" className="w-full" disabled={isPending}>
+                    {error && <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</div>}
+                    <Button type="submit" size="lg" className="w-full" disabled={isPending}>
                         {isPending ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

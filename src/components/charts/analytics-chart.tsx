@@ -1,31 +1,40 @@
 "use client";
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const BRAND = "#4f46e5";
 
 export function AnalyticsChart({ data }: { data: { date: string, clicks: number }[] }) {
     return (
-        <Card className="col-span-full mb-6">
-            <CardHeader>
-                <CardTitle>Clicks Over Time</CardTitle>
+        <Card className="col-span-full gap-0 py-0">
+            <CardHeader className="border-b py-4">
+                <CardTitle className="font-semibold">Clicks Over Time</CardTitle>
                 <CardDescription>Daily engagement metrics for all your links and QR codes.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[320px] px-2 py-5 sm:px-4">
                 {data.length === 0 ? (
                     <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                         No click data available yet.
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                            <XAxis dataKey="date" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                        <AreaChart data={data} margin={{ top: 5, right: 12, left: -20, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="clicksFill" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={BRAND} stopOpacity={0.25} />
+                                    <stop offset="100%" stopColor={BRAND} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid vertical={false} stroke="#e5e7eb" strokeDasharray="3 3" />
+                            <XAxis dataKey="date" stroke="#8b8fa3" fontSize={12} tickLine={false} axisLine={false} tickMargin={8} minTickGap={16} />
+                            <YAxis stroke="#8b8fa3" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={(value) => `${value}`} />
                             <Tooltip
-                                contentStyle={{ borderRadius: "8px", border: "1px solid #eaeaea", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
-                                cursor={{ stroke: "#eaeaea", strokeWidth: 1 }}
+                                contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", boxShadow: "0 8px 24px rgba(17,24,39,0.08)" }}
+                                cursor={{ stroke: "#c7d2fe", strokeWidth: 1 }}
                             />
-                            <Line type="monotone" dataKey="clicks" stroke="#000" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
-                        </LineChart>
+                            <Area type="monotone" dataKey="clicks" stroke={BRAND} strokeWidth={2} fill="url(#clicksFill)" dot={false} activeDot={{ r: 5, fill: BRAND, stroke: "#fff", strokeWidth: 2 }} />
+                        </AreaChart>
                     </ResponsiveContainer>
                 )}
             </CardContent>

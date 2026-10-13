@@ -47,3 +47,6 @@ dburl.txt
 auth.txt
 vercel_live.log
 prisma/dev.db
+
+# local Claude preview config
+.claude/

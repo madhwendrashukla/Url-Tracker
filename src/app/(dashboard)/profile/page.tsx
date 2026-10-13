@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/page-header";
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -15,22 +16,19 @@ export default async function ProfilePage() {
 
     return (
         <div className="flex flex-col gap-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-                <p className="text-muted-foreground">Manage your account settings and preferences.</p>
-            </div>
+            <PageHeader title="Profile" description="Manage your account settings and preferences." />
 
             <div className="grid gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Account Information</CardTitle>
+                <Card className="gap-0 py-0">
+                    <CardHeader className="border-b py-4">
+                        <CardTitle className="font-semibold">Account Information</CardTitle>
                         <CardDescription>Your personal information registered with us.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
+                    <CardContent className="flex flex-col gap-6 py-6">
                         <div className="flex items-center gap-6">
-                            <Avatar className="h-20 w-20">
+                            <Avatar className="h-20 w-20 ring-4 ring-accent">
                                 <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
-                                <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
+                                <AvatarFallback className="bg-linear-to-br from-indigo-600 to-violet-600 text-2xl text-white">{initials}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col gap-1">
                                 <h3 className="text-2xl font-semibold leading-none tracking-tight">{user.name}</h3>

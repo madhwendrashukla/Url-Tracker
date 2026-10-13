@@ -1,12 +1,10 @@
 import { QrForm } from "@/components/forms/qr-form";
+import { PageHeader } from "@/components/page-header";
 
 export default function CreateQrCodePage() {
     return (
-        <div className="flex flex-col space-y-6 max-w-5xl">
-            <div>
-                <h2 className="text-2xl font-bold tracking-tight">New QR Code</h2>
-                <p className="text-muted-foreground">Generate a customized QR code.</p>
-            </div>
+        <div className="flex max-w-5xl flex-col gap-6">
+            <PageHeader title="New QR Code" description="Generate a customized QR code." />
             <QrForm />
         </div>
     );

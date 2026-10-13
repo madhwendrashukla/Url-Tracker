@@ -18,7 +18,7 @@ export function AnalyticsFilter({ currentFilter, qrCodes, links }: AnalyticsFilt
 
     return (
         <Select value={currentFilter} onValueChange={handleValueChange}>
-            <SelectTrigger className="w-[280px]">
+            <SelectTrigger className="h-9 w-full bg-card sm:w-[280px]">
                 <SelectValue placeholder="All Links & QR Codes" />
             </SelectTrigger>
             <SelectContent>

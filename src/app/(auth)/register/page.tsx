@@ -1,7 +1,7 @@
 import { RegisterForm } from "@/components/forms/register-form";
 
 export const metadata = {
-    title: "Register | QR & Link Manager",
+    title: "Create account",
 };
 
 export default function RegisterPage() {
