@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AnalyticsChart } from "@/components/charts/analytics-chart";
@@ -8,67 +9,71 @@ import { Button } from "@/components/ui/button";
 import { AnalyticsFilter } from "@/components/analytics-filter";
 import { LocalTime } from "@/components/local-time";
 
+const CHART_TIME_ZONE = "Asia/Kolkata";
+
 export default async function AnalyticsPage(props: { searchParams: Promise<{ filter?: string }> }) {
     const searchParams = await props.searchParams;
     const filter = searchParams.filter;
     const session = await auth();
     if (!session?.user) return null;
 
-    // Fetch user items for dropdown
-    const qrCodes = await prisma.qRCode.findMany({ where: { userId: session.user.id } });
-    const links = await prisma.link.findMany({ where: { userId: session.user.id } });
+    const userId = session.user.id;
 
-    // Build query based on filter
-    const whereClause: any = {
-        OR: [
-            { link: { userId: session.user.id } },
-            { qrCode: { userId: session.user.id } }
-        ]
-    };
+    // Only the fields the filter dropdown needs.
+    const [qrCodes, links] = await Promise.all([
+        prisma.qRCode.findMany({ where: { userId }, select: { id: true, name: true } }),
+        prisma.link.findMany({ where: { userId }, select: { id: true, name: true, customSlug: true, originalUrl: true } }),
+    ]);
+    const qrIds = qrCodes.map((q) => q.id);
+    const linkIds = links.map((l) => l.id);
 
-    if (filter && filter !== "all") {
-        if (filter.startsWith("qr_")) {
-            whereClause.qrCodeId = filter.replace("qr_", "");
-            delete whereClause.OR;
-        } else if (filter.startsWith("link_")) {
-            whereClause.linkId = filter.replace("link_", "");
-            delete whereClause.OR;
-        }
-    }
+    // A filter only applies to an item this user owns; anything else falls back to "all".
+    const filterId = filter?.replace(/^(qr|link)_/, "") ?? "";
+    const qrFilter = filter?.startsWith("qr_") && qrIds.includes(filterId);
+    const linkFilter = filter?.startsWith("link_") && linkIds.includes(filterId);
 
-    const analytics = await prisma.analytics.findMany({
-        where: whereClause,
-        include: {
-            link: true,
-            qrCode: true
-        },
-        orderBy: { createdAt: "desc" }
-    });
+    const where: Prisma.AnalyticsWhereInput = qrFilter
+        ? { qrCodeId: filterId }
+        : linkFilter
+            ? { linkId: filterId }
+            : { OR: [{ linkId: { in: linkIds } }, { qrCodeId: { in: qrIds } }] };
+    const whereSql = qrFilter
+        ? Prisma.sql`"qrCodeId" = ${filterId}`
+        : linkFilter
+            ? Prisma.sql`"linkId" = ${filterId}`
+            : Prisma.sql`("linkId" = ANY(${linkIds}::text[]) OR "qrCodeId" = ANY(${qrIds}::text[]))`;
 
-    const browsers: Record<string, number> = {};
-    const locations: Record<string, number> = {};
-    const timeSeries: Record<string, number> = {};
-    const uniqueIps = new Set<string>();
+    // createdAt is stored in UTC; group days in the dashboard's time zone.
+    const day = Prisma.sql`date_trunc('day', ("createdAt" AT TIME ZONE 'UTC') AT TIME ZONE ${CHART_TIME_ZONE})`;
 
-    analytics.forEach(a => {
-        browsers[a.browser || "Unknown"] = (browsers[a.browser || "Unknown"] || 0) + 1;
+    const [totalClicks, browserGroups, locationGroups, recent, uniques, perDay] = await Promise.all([
+        prisma.analytics.count({ where }),
+        prisma.analytics.groupBy({
+            by: ["browser"], where, _count: { browser: true },
+            orderBy: { _count: { browser: "desc" } }, take: 5,
+        }),
+        prisma.analytics.groupBy({
+            by: ["country", "city"], where, _count: { country: true },
+            orderBy: { _count: { country: "desc" } }, take: 5,
+        }),
+        prisma.analytics.findMany({
+            where, orderBy: { createdAt: "desc" }, take: 10,
+            include: { link: { select: { name: true } }, qrCode: { select: { name: true } } },
+        }),
+        prisma.$queryRaw<{ n: number }[]>`SELECT count(DISTINCT "ipAddress")::int AS n FROM "Analytics" WHERE ${whereSql}`,
+        prisma.$queryRaw<{ date: string; clicks: number }[]>`
+            SELECT to_char(d, 'Mon FMDD') AS date, count(*)::int AS clicks
+            FROM (SELECT ${day} AS d FROM "Analytics" WHERE ${whereSql}) AS days
+            GROUP BY d ORDER BY d`,
+    ]);
 
-        const loc = a.country ? (a.city ? `${a.country} - ${a.city}` : a.country) : "Unknown";
-        locations[loc] = (locations[loc] || 0) + 1;
-
-        if (a.ipAddress) uniqueIps.add(a.ipAddress);
-
-        const dateStr = new Date(a.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        timeSeries[dateStr] = (timeSeries[dateStr] || 0) + 1;
-    });
-
-    // Backfill empty days in the last 7 days logically or just show what's there
-    const chartData = Object.entries(timeSeries).map(([date, clicks]) => ({ date, clicks })).reverse();
-    const topBrowsers = Object.entries(browsers).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const topLocations = Object.entries(locations).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
-    const totalClicks = analytics.length;
-    const uniqueVisitors = uniqueIps.size;
+    const chartData = perDay;
+    const topBrowsers = browserGroups.map((g) => [g.browser || "Unknown", g._count.browser] as const);
+    const topLocations = locationGroups.map((g) => [
+        g.country ? (g.city ? `${g.country} - ${g.city}` : g.country) : "Unknown",
+        g._count.country,
+    ] as const);
+    const uniqueVisitors = uniques[0]?.n ?? 0;
 
     return (
         <div className="flex flex-col space-y-6">
@@ -158,7 +163,7 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {analytics.slice(0, 10).map((a) => (
+                            {recent.map((a) => (
                                 <TableRow key={a.id}>
                                     <TableCell><LocalTime date={a.createdAt} /></TableCell>
                                     <TableCell className="font-semibold text-sm">
@@ -170,7 +175,7 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
                                     <TableCell className="text-xs text-muted-foreground">{a.ipAddress}</TableCell>
                                 </TableRow>
                             ))}
-                            {analytics.length === 0 && (
+                            {recent.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                         No activity to display.

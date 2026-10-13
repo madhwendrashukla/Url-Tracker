@@ -8,19 +8,12 @@ export default async function DashboardOverview() {
     const session = await auth();
     if (!session?.user) return null;
 
-    const [qrCount, linkCount, activeQrs, activeLinks, totalClicks, recentActivities] = await Promise.all([
-        prisma.qRCode.count({ where: { userId: session.user.id } }),
-        prisma.link.count({ where: { userId: session.user.id } }),
+    // Totals come from the per-item click counters instead of scanning every Analytics row.
+    const [qrStats, linkStats, activeQrs, activeLinks, recentActivities] = await Promise.all([
+        prisma.qRCode.aggregate({ where: { userId: session.user.id }, _count: true, _sum: { clicks: true } }),
+        prisma.link.aggregate({ where: { userId: session.user.id }, _count: true, _sum: { clicks: true } }),
         prisma.qRCode.count({ where: { userId: session.user.id, isActive: true } }),
         prisma.link.count({ where: { userId: session.user.id, isActive: true } }),
-        prisma.analytics.count({
-            where: {
-                OR: [
-                    { link: { userId: session.user.id } },
-                    { qrCode: { userId: session.user.id } }
-                ]
-            }
-        }),
         prisma.analytics.findMany({
             where: {
                 OR: [
@@ -32,6 +25,10 @@ export default async function DashboardOverview() {
             take: 5
         })
     ]);
+
+    const qrCount = qrStats._count;
+    const linkCount = linkStats._count;
+    const totalClicks = (qrStats._sum.clicks ?? 0) + (linkStats._sum.clicks ?? 0);
 
     return (
         <div className="flex flex-col space-y-6">

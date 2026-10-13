@@ -29,5 +29,6 @@ export default auth((req: any) => {
 });
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    // Skip public redirect paths (/url/*, /qr/*); the trailing slash keeps /qr-codes protected.
+    matcher: ["/((?!api/|url/|qr/|_next/static|_next/image|favicon.ico).*)"],
 };
