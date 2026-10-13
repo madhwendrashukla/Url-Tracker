@@ -28,7 +28,7 @@ export default async function ProfilePage() {
                         <div className="flex items-center gap-6">
                             <Avatar className="h-20 w-20 ring-4 ring-accent">
                                 <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
-                                <AvatarFallback className="bg-linear-to-br from-indigo-600 to-violet-600 text-2xl text-white">{initials}</AvatarFallback>
+                                <AvatarFallback className="bg-primary text-2xl text-primary-foreground">{initials}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col gap-1">
                                 <h3 className="text-2xl font-semibold leading-none tracking-tight">{user.name}</h3>

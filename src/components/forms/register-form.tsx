@@ -29,12 +29,12 @@ export function RegisterForm() {
     };
 
     return (
-        <Card className="w-full gap-6 bg-transparent py-0 ring-0">
-            <CardHeader className="px-0">
-                <CardTitle className="text-2xl font-semibold tracking-tight">Create an account</CardTitle>
+        <Card className="w-full gap-5 py-6 shadow-sm">
+            <CardHeader className="px-6">
+                <CardTitle className="text-xl font-semibold tracking-tight">Create an account</CardTitle>
                 <CardDescription>Enter your details to get started</CardDescription>
             </CardHeader>
-            <CardContent className="px-0">
+            <CardContent className="px-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Name</Label>
@@ -54,7 +54,7 @@ export function RegisterForm() {
                     </Button>
                 </form>
             </CardContent>
-            <CardFooter className="justify-start border-0 bg-transparent px-0 pt-0">
+            <CardFooter className="justify-center border-0 bg-transparent px-6 pt-0 pb-6">
                 <p className="text-sm text-muted-foreground">
                     Already have an account?{" "}
                     <Link href="/login" className="font-medium text-primary hover:underline">

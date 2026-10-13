@@ -109,8 +109,8 @@ export function QrForm() {
                 <CardHeader className="border-b py-4">
                     <CardTitle className="font-semibold">Live Preview</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-1 flex-col items-center justify-center bg-[radial-gradient(circle_at_center,var(--color-accent),transparent_70%)] py-12">
-                    <div className="rounded-2xl border bg-white p-5 shadow-lg shadow-indigo-900/5">
+                <CardContent className="flex flex-1 flex-col items-center justify-center bg-muted/40 py-12">
+                    <div className="rounded-2xl border bg-white p-5 shadow-sm">
                         <QRCodeSVG
                             value={url || "https://example.com"}
                             size={200}

@@ -20,12 +20,6 @@ export function AnalyticsChart({ data }: { data: { date: string, clicks: number 
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data} margin={{ top: 5, right: 12, left: -20, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="clicksFill" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor={BRAND} stopOpacity={0.25} />
-                                    <stop offset="100%" stopColor={BRAND} stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
                             <CartesianGrid vertical={false} stroke="#e5e7eb" strokeDasharray="3 3" />
                             <XAxis dataKey="date" stroke="#8b8fa3" fontSize={12} tickLine={false} axisLine={false} tickMargin={8} minTickGap={16} />
                             <YAxis stroke="#8b8fa3" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={(value) => `${value}`} />
@@ -33,7 +27,7 @@ export function AnalyticsChart({ data }: { data: { date: string, clicks: number 
                                 contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", boxShadow: "0 8px 24px rgba(17,24,39,0.08)" }}
                                 cursor={{ stroke: "#c7d2fe", strokeWidth: 1 }}
                             />
-                            <Area type="monotone" dataKey="clicks" stroke={BRAND} strokeWidth={2} fill="url(#clicksFill)" dot={false} activeDot={{ r: 5, fill: BRAND, stroke: "#fff", strokeWidth: 2 }} />
+                            <Area type="monotone" dataKey="clicks" stroke={BRAND} strokeWidth={2} fill={BRAND} fillOpacity={0.08} dot={false} activeDot={{ r: 5, fill: BRAND, stroke: "#fff", strokeWidth: 2 }} />
                         </AreaChart>
                     </ResponsiveContainer>
                 )}

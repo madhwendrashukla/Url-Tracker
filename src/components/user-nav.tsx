@@ -22,7 +22,7 @@ export function UserNav({ user }: { user: any }) {
             <DropdownMenuTrigger className="relative h-9 w-9 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                 <Avatar className="h-9 w-9 ring-2 ring-accent transition-opacity hover:opacity-85">
                     <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
-                    <AvatarFallback className="bg-linear-to-br from-indigo-600 to-violet-600 font-medium text-white">{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary font-medium text-primary-foreground">{initials}</AvatarFallback>
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">
