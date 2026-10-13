@@ -39,6 +39,8 @@ model QRCode {
 
   user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   analytics          Analytics[]
+
+  @@index([userId])
 }
 
 model Link {
@@ -57,6 +59,8 @@ model Link {
 
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   analytics     Analytics[]
+
+  @@index([userId])
 }
 
 model Analytics {
@@ -74,4 +78,7 @@ model Analytics {
 
   qrCode        QRCode?  @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
   link          Link?    @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId, createdAt])
+  @@index([qrCodeId, createdAt])
 }
