@@ -22,8 +22,8 @@ export default async function AnalyticsPage(props: { searchParams: Promise<{ fil
 
     // Only the fields the filter dropdown needs.
     const [qrCodes, links] = await Promise.all([
-        prisma.qRCode.findMany({ where: { userId }, select: { id: true, name: true } }),
-        prisma.link.findMany({ where: { userId }, select: { id: true, name: true, customSlug: true, originalUrl: true } }),
+        prisma.qRCode.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, select: { id: true, name: true, createdAt: true } }),
+        prisma.link.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, select: { id: true, name: true, customSlug: true, originalUrl: true, createdAt: true } }),
     ]);
     const qrIds = qrCodes.map((q) => q.id);
     const linkIds = links.map((l) => l.id);

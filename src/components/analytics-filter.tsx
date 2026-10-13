@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 
 interface AnalyticsFilterProps {
     currentFilter: string;
-    qrCodes: { id: string; name: string }[];
-    links: { id: string; name: string; customSlug: string | null; originalUrl: string }[];
+    qrCodes: { id: string; name: string; createdAt: Date }[];
+    links: { id: string; name: string; customSlug: string | null; originalUrl: string; createdAt: Date }[];
 }
 
 type Kind = "all" | "qr" | "link";
-type Option = { value: string; label: string; detail?: string; kind: Kind };
+type Option = { value: string; label: string; detail?: string; kind: Kind; createdAt?: number };
 
 const ALL: Option = { value: "all", label: "All links & QR codes", kind: "all" };
 
@@ -31,14 +31,15 @@ export function AnalyticsFilter({ currentFilter, qrCodes, links }: AnalyticsFilt
 
     const options = useMemo<Option[]>(
         () => [
-            ...qrCodes.map((qr) => ({ value: `qr_${qr.id}`, label: qr.name, kind: "qr" as const })),
+            ...qrCodes.map((qr) => ({ value: `qr_${qr.id}`, label: qr.name, kind: "qr" as const, createdAt: new Date(qr.createdAt).getTime() })),
             ...links.map((link) => ({
                 value: `link_${link.id}`,
                 label: link.name,
                 detail: link.customSlug ? `/${link.customSlug}` : undefined,
                 kind: "link" as const,
+                createdAt: new Date(link.createdAt).getTime(),
             })),
-        ],
+        ].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0)), // newest first
         [qrCodes, links]
     );
 
